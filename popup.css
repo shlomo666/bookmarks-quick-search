@@ -1,0 +1,42 @@
+body {
+  font-size: medium;
+  height: fit-content;
+
+  min-width: 300px;
+  max-width: 300px;
+}
+hr {
+  border: none;
+  height: 1px;
+  background-color: rgba(172, 172, 172, 0.2);
+}
+img {
+  height: 100%;
+  padding: 0 5px;
+}
+#root {
+  cursor: pointer;
+}
+#root > div {
+  padding: 0 8px 0 8px;
+}
+#root > div > div {
+  padding: 0 8px;
+}
+input {
+  height: 30px;
+  width: 90%;
+  outline: none;
+  width: 90%;
+  border-radius: 5px;
+  border-color: rgba(33, 33, 33, 0.2);
+  padding: 0 10px;
+}
+span {
+  margin: 0 0;
+  max-width: 70%;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

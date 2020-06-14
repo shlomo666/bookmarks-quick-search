@@ -1,0 +1,39 @@
+{
+  "name": "Bookmarks Quick Search",
+  "version": "1.0",
+  "description": "Search bookmarks quickly, using cmd/ctrl+E to open a search popup",
+  "permissions": [
+    "tabs",
+    "bookmarks",
+    "activeTab",
+    "declarativeContent",
+    "chrome://favicon/"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/bookmarks-searcher16.png",
+      "32": "images/bookmarks-searcher32.png",
+      "48": "images/bookmarks-searcher48.png",
+      "128": "images/bookmarks-searcher128.png"
+    }
+  },
+  "icons": {
+    "16": "images/bookmarks-searcher16.png",
+    "32": "images/bookmarks-searcher32.png",
+    "48": "images/bookmarks-searcher48.png",
+    "128": "images/bookmarks-searcher128.png"
+  },
+  "commands": {
+    "_execute_page_action": {
+      "suggested_key": {
+        "default": "Ctrl+E"
+      }
+    }
+  },
+  "manifest_version": 2
+}
