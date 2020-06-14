@@ -1,6 +1,6 @@
 {
   "name": "Bookmarks Quick Search",
-  "version": "1.0",
+  "version": "0.0.1",
   "description": "Search bookmarks quickly, using cmd/ctrl+E to open a search popup",
   "permissions": [
     "tabs",
