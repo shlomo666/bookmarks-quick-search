@@ -2,13 +2,7 @@
   "name": "Bookmarks Quick Search",
   "version": "0.0.1",
   "description": "Search bookmarks quickly, using cmd/ctrl+E to open a search popup",
-  "permissions": [
-    "tabs",
-    "bookmarks",
-    "activeTab",
-    "declarativeContent",
-    "chrome://favicon/"
-  ],
+  "permissions": ["bookmarks", "declarativeContent", "chrome://favicon/"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
