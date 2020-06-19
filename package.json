@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "background.js",
-  "scripts": {},
+  "scripts": {
+    "build": "rm -rf bookmarks-quick-search build.zip && mkdir bookmarks-quick-search && cp -r `ls -A | grep -v .vscode | grep -v bookmarks-quick-search | grep -v node_modules | grep -v .git | grep -v .gitignore` bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rm -rf bookmarks-quick-search"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
