@@ -1,7 +1,7 @@
 {
   "name": "Bookmarks Quick Search",
-  "version": "0.0.2",
-  "description": "Search bookmarks quickly and easily, with a search popup, which can be opened by a click on the extension logo (or by cmd/ctrl+E).",
+  "version": "0.0.3",
+  "description": "Search bookmarks quickly and easily, with a search popup, which can be opened by a click on the extension logo (or by cmd+E/ctrl+W).",
   "permissions": ["bookmarks", "declarativeContent", "chrome://favicon/"],
   "background": {
     "scripts": ["background.js"],
@@ -25,7 +25,8 @@
   "commands": {
     "_execute_page_action": {
       "suggested_key": {
-        "default": "Ctrl+E"
+        "default": "Ctrl+W",
+        "mac": "Command+E"
       }
     }
   },
