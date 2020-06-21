@@ -1,6 +1,6 @@
 {
   "name": "Bookmarks Quick Search",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Search bookmarks quickly and easily, with a search popup, which can be opened by a click on the extension logo (or by cmd+E/ctrl+W).",
   "permissions": ["bookmarks", "declarativeContent", "chrome://favicon/"],
   "background": {

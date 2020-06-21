@@ -1,7 +1,5 @@
 body {
   font-size: medium;
-  height: fit-content;
-
   min-width: 300px;
   max-width: 300px;
 }
@@ -16,6 +14,9 @@ img {
 }
 #root {
   cursor: pointer;
+  max-height: 405px;
+  height: fit-content;
+  overflow: scroll;
 }
 #root > div {
   padding: 0 8px 0 8px;
@@ -39,4 +40,27 @@ span {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.header {
+  padding: 10px;
+  text-align: center;
+  display: flex;
+}
+
+.andMore {
+  cursor: default;
+  color: lightgray;
+}
+
+.bookmarkTitle {
+  width: 200px;
+}
+
+.bookmarkShortcut {
+  color: gray;
+}
+
+.bookmarkPath {
+  font-size: small;
 }

@@ -4,7 +4,7 @@
 
 'use strict';
 
-const MAX_BOOKMARKS = 10;
+const MAX_BOOKMARKS = 300;
 let search = document.getElementById('search');
 const root = document.getElementById('root');
 
@@ -40,57 +40,13 @@ function allCombinations(chars, length) {
   return ret;
 }
 
-let timeoutHandlerOfLoadShortcuts;
-let iteration = 1;
-
 /** @param {string} q */
-async function loadResults(q, loadShortcuts = false) {
-  clearTimeout(timeoutHandlerOfLoadShortcuts);
-  const currIteration = ++iteration;
-
+async function loadResults(q) {
   let all = await getBookmarks();
   let bookmarks = filterBookmarks(all, q);
 
-  if (iteration !== currIteration) {
-    return;
-  }
-
   const hasMore = bookmarks.length > MAX_BOOKMARKS;
   bookmarks = bookmarks.slice(0, MAX_BOOKMARKS);
-
-  if (loadShortcuts) {
-    bookmarks = await Promise.all(
-      bookmarks.map(async (bookmark) => {
-        const allChars = (bookmark.title + bookmark.path)
-          .toLowerCase()
-          .split('');
-        let shortcutLength = 0;
-        while (++shortcutLength <= 3) {
-          const chars = allCombinations(allChars, shortcutLength);
-          for (let i = 0; i < chars.length; i++) {
-            const ch = chars[i];
-            if (iteration !== currIteration) {
-              return;
-            }
-            if (i % 10 === 0) await new Promise((r) => setTimeout(r));
-            const matched = filterBookmarks(all, ch)[0].id === bookmark.id;
-            if (matched) {
-              return { ...bookmark, shortcut: ch };
-            }
-          }
-        }
-        return bookmark;
-      })
-    );
-  } else {
-    setTimeout(() => {
-      loadResults(q, true);
-    }, 50);
-  }
-
-  if (iteration !== currIteration) {
-    return;
-  }
 
   currentNodeOptions = bookmarks;
   currentNodeOptionsIndex = 0;
@@ -102,20 +58,18 @@ async function loadResults(q, loadShortcuts = false) {
           `<div id=div_${i}>
             <div>
               <img src="${faviconUrl}" />
-              <span style="width: 200px" title="${title}">${title}</span>
+              <span class="bookmarkTitle" title="${title}">${title}</span>
               ${
                 !shortcut
-                  ? ''
-                  : `<span style="color: gray" title="Search '${shortcut}' to get this bookmark as the first result">${shortcut}</span>`
+                  ? `<span id="shortcut_${i}" class="bookmarkShortcut"></span>`
+                  : `<span class="bookmarkShortcut" title="Search '${shortcut}' to get this bookmark as the first result">${shortcut}</span>`
               }
             </div>
-          ${path ? `<span style="font-size: small">${path}</span>` : ''}
+          ${path ? `<span class="bookmarkPath">${path}</span>` : ''}
           </div>`
       )
       .join('<hr>') +
-    (hasMore
-      ? '<hr><div style="cursor: default; color: lightgray">And more...</div>'
-      : '');
+    (hasMore ? '<hr><div class="andMore">And more...</div>' : '');
 
   boldText(currentNodeOptionsIndex, true);
   bookmarks.forEach((p, i) => {
@@ -130,6 +84,39 @@ async function loadResults(q, loadShortcuts = false) {
       boldText(currentNodeOptionsIndex, true);
     };
   });
+
+  loadShortcuts(all, bookmarks);
+}
+
+let iteration = 1;
+async function loadShortcuts(all, bookmarks) {
+  const currIteration = ++iteration;
+  for (let idx = 0; idx < bookmarks.length; idx++) {
+    if (idx % 3 === 0) {
+      await new Promise((r) => setTimeout(r));
+      if (iteration !== currIteration) {
+        return;
+      }
+    }
+    const bookmark = bookmarks[idx];
+    const allChars = (bookmark.title + bookmark.path).toLowerCase().split('');
+    let shortcutLength = 0;
+    let foundShortcut = false;
+    while (++shortcutLength <= 3 && !foundShortcut) {
+      const partials = allCombinations(allChars, shortcutLength);
+      for (let i = 0; i < partials.length && !foundShortcut; i++) {
+        const shortcut = partials[i];
+        const matched = filterBookmarks(all, shortcut)[0].id === bookmark.id;
+        if (matched) {
+          const span = document.getElementById(`shortcut_${idx}`);
+          if (!span) return;
+          span.innerText = shortcut;
+          span.title = `Search '${shortcut}' to get this bookmark as the first result`;
+          foundShortcut = true;
+        }
+      }
+    }
+  }
 }
 
 async function getBookmarks() {
@@ -192,46 +179,6 @@ function filterBookmarks(bookmarks, q) {
   return relevantBookmarks;
 }
 
-/**
- * @param {string} q 
- * @param {{
-  faviconUrl: string;
-  url: string;
-  id: string;
-  title: string;
-  path: string;
-}[]} bookmarks
-*/
-function findFirstMatchingBookmark(bookmarks, q) {
-  const words = (q || '')
-    .toLowerCase()
-    .split(' ')
-    .map((q) => q.trim())
-    .filter((q) => q);
-
-  let relevantBookmark = bookmarks
-    .filter((p) =>
-      words.every((q) =>
-        [p.path.toLowerCase(), p.title.toLowerCase()].some((s) => s.includes(q))
-      )
-    )
-    .sort((a, b) =>
-      [a, b]
-        .map((p) =>
-          (p.title.toLowerCase() + p.path.toLowerCase()).indexOf(words[0])
-        )
-        .reduce((a, b) => a - b)
-    )[0];
-  if (!relevantBookmark) {
-    const chars = (q || '').toLowerCase().split('');
-    relevantBookmark = bookmarks.find((p) => {
-      const set = new Set((p.path + p.title).toLowerCase().split(''));
-      return chars.every((q) => set.has(q));
-    });
-  }
-  return relevantBookmark;
-}
-
 /** @param {chrome.bookmarks.BookmarkTreeNode} mainNode */
 function getTitlePath(mainNode, allNodes) {
   let node = mainNode;
@@ -261,6 +208,7 @@ search.oninput = () => {
 
 function boldText(idx, bold) {
   const div = document.getElementById('div_' + idx);
+  if (!div) return;
   div.style.fontWeight = bold ? 'bolder' : 'normal';
   div.style.fontSize = bold ? 'large' : 'medium';
 }
