@@ -7,6 +7,7 @@
 const MAX_BOOKMARKS = 300;
 let search = document.getElementById('search');
 const root = document.getElementById('root');
+let finishedHtmlLoad = Promise.resolve();
 
 // chrome.storage.sync.get('color', function (data) {
 //   changeColor.style.backgroundColor = data.color;
@@ -203,7 +204,7 @@ function goto() {
 }
 
 search.oninput = () => {
-  loadResults(search.value);
+  finishedHtmlLoad = loadResults(search.value);
 };
 
 function boldText(idx, bold) {
@@ -213,8 +214,9 @@ function boldText(idx, bold) {
   div.style.fontSize = bold ? 'large' : 'medium';
 }
 
-search.onkeydown = (e) => {
+search.onkeydown = async (e) => {
   if (e.key === 'Enter') {
+    await finishedHtmlLoad;
     goto();
   }
   if (e.key === 'ArrowDown') {
