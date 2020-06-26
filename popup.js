@@ -56,8 +56,8 @@ async function loadResults(q) {
     bookmarks
       .map(
         ({ faviconUrl, title, shortcut, path }, i) =>
-          `<div id=div_${i}>
-            <div>
+          `<div>
+            <div id="div_${i}">
               <img src="${faviconUrl}" />
               <span class="bookmarkTitle" title="${title}">${title}</span>
               ${
@@ -66,7 +66,18 @@ async function loadResults(q) {
                   : `<span class="bookmarkShortcut" title="Search '${shortcut}' to get this bookmark as the first result">${shortcut}</span>`
               }
             </div>
-          ${path ? `<span class="bookmarkPath">${path}</span>` : ''}
+          ${
+            path
+              ? path
+                  .split('/')
+                  .filter((part) => part)
+                  .map(
+                    (pathPart, idx) =>
+                      `<span class="bookmarkPath" id="bookmarkPath_${i}_${idx}" title="Search in this folder">${pathPart}/</span>`
+                  )
+                  .join('')
+              : ''
+          }
           </div>`
       )
       .join('<hr>') +
@@ -75,15 +86,44 @@ async function loadResults(q) {
   boldText(currentNodeOptionsIndex, true);
   bookmarks.forEach((p, i) => {
     const div = document.getElementById('div_' + i);
-    div.onclick = () => {
-      currentNodeOptionsIndex = i;
-      goto();
-    };
-    div.onmouseenter = () => {
-      boldText(currentNodeOptionsIndex, false);
-      currentNodeOptionsIndex = i;
-      boldText(currentNodeOptionsIndex, true);
-    };
+    if (div) {
+      div.onclick = () => {
+        currentNodeOptionsIndex = i;
+        goto();
+      };
+      div.onmouseenter = () => {
+        boldText(currentNodeOptionsIndex, false);
+        currentNodeOptionsIndex = i;
+        boldText(currentNodeOptionsIndex, true);
+      };
+    }
+
+    let idx = -1;
+    /** @type {HTMLElement} */
+    let bookmarkPath;
+    let path = '';
+    const elements = [];
+    while (
+      (bookmarkPath = document.getElementById(`bookmarkPath_${i}_${++idx}`))
+    ) {
+      path += bookmarkPath.innerText;
+      elements.push({ bookmarkPath, path });
+    }
+
+    elements.forEach(({ bookmarkPath, path }) => {
+      bookmarkPath.onclick = () => {
+        search.value = path;
+        refreshPopup();
+        search.focus();
+      };
+
+      bookmarkPath.onmouseenter = () => {
+        boldTextForElement(bookmarkPath, true);
+      };
+      bookmarkPath.onmouseleave = () => {
+        boldTextForElement(bookmarkPath, false);
+      };
+    });
   });
 
   loadShortcuts(all, bookmarks);
@@ -203,15 +243,19 @@ function goto() {
   });
 }
 
-search.oninput = () => {
+const refreshPopup = (search.oninput = () => {
   finishedHtmlLoad = loadResults(search.value);
-};
+});
 
 function boldText(idx, bold) {
   const div = document.getElementById('div_' + idx);
   if (!div) return;
-  div.style.fontWeight = bold ? 'bolder' : 'normal';
-  div.style.fontSize = bold ? 'large' : 'medium';
+  boldTextForElement(div, bold);
+}
+
+function boldTextForElement(element, bold) {
+  element.style.fontWeight = bold ? 'bolder' : 'normal';
+  element.style.fontSize = bold ? 'large' : 'medium';
 }
 
 search.onkeydown = async (e) => {
