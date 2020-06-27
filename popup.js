@@ -228,7 +228,7 @@ function getTitlePath(mainNode, allNodes) {
   let path = '';
   node = allNodes.find((p) => p.id === node.parentId);
   while (node) {
-    path += `${node.title}/`;
+    path = `${node.title}/${path}`;
     node = allNodes.find((p) => p.id === node.parentId);
   }
 
