@@ -1,7 +1,3 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 'use strict';
 
 const MAX_BOOKMARKS = 300;
@@ -9,37 +5,11 @@ let search = document.getElementById('search');
 const root = document.getElementById('root');
 let finishedHtmlLoad = Promise.resolve();
 
-// chrome.storage.sync.get('color', function (data) {
-//   changeColor.style.backgroundColor = data.color;
-//   changeColor.setAttribute('value', data.color);
-// });
-
 /** @type {() => Promise<chrome.bookmarks.BookmarkTreeNode[]>} */
 const getTree = () => new Promise((r) => chrome.bookmarks.getTree(r));
 
 setTimeout(loadResults, 1);
 search.focus();
-
-/**
- * @param {string[]} chars
- * @param {number} length
- */
-function allCombinations(chars, length) {
-  let ret = [...chars];
-  for (let i = 0; i < length - 1; i++) {
-    ret = [...new Set(ret)]
-      .map((s) => {
-        return [...chars].map((ch) => s + ch);
-      })
-      .flat()
-      .sort(
-        (s1, s2) =>
-          util.keyboardDistance(...s1.slice(-2)) -
-          util.keyboardDistance(...s2.slice(-2))
-      );
-  }
-  return ret;
-}
 
 /** @param {string} q */
 async function loadResults(q) {
@@ -132,22 +102,31 @@ async function loadResults(q) {
 let iteration = 1;
 async function loadShortcuts(all, bookmarks) {
   const currIteration = ++iteration;
-  for (let idx = 0; idx < bookmarks.length; idx++) {
-    if (idx % 3 === 0) {
-      await new Promise((r) => setTimeout(r));
-      if (iteration !== currIteration) {
-        return;
-      }
+  const checkForEvents = async () => {
+    if (util.timePassed() > 0.025) {
+      await new Promise((r) => requestAnimationFrame(r));
     }
+    if (iteration !== currIteration) {
+      return true;
+    }
+  };
+  for (let idx = 0; idx < bookmarks.length; idx++) {
+    if (await checkForEvents()) return;
     const bookmark = bookmarks[idx];
-    const allChars = (bookmark.title + bookmark.path).toLowerCase().split('');
+    const allChars = [
+      ...new Set((bookmark.title + bookmark.path).toLowerCase().split('')),
+    ];
     let shortcutLength = 0;
     let foundShortcut = false;
     while (++shortcutLength <= 3 && !foundShortcut) {
-      const partials = allCombinations(allChars, shortcutLength);
+      if (await checkForEvents()) return;
+      const partials = util.allCombinations(allChars, shortcutLength);
       for (let i = 0; i < partials.length && !foundShortcut; i++) {
+        if (i % 100 === 0) {
+          if (await checkForEvents()) return;
+        }
         const shortcut = partials[i];
-        const matched = filterBookmarks(all, shortcut)[0].id === bookmark.id;
+        const matched = findFirstBookmarkId(all, shortcut) === bookmark.id;
         if (matched) {
           const span = document.getElementById(`shortcut_${idx}`);
           if (!span) return;
@@ -174,7 +153,7 @@ async function getBookmarks() {
       ...getTitlePath(p, all),
       faviconUrl: `chrome://favicon/${p.url.split('?')[0]}`,
       url: p.url,
-      id: p.id
+      id: p.id,
     }));
 
   return bookmarks;
@@ -191,8 +170,8 @@ async function getBookmarks() {
 }[]} bookmarks
 */
 function filterBookmarks(bookmarks, q) {
-  const words = (q || '')
-    .toLowerCase()
+  const qLowerCase = (q || '').toLowerCase();
+  const words = qLowerCase
     .split(' ')
     .map((q) => q.trim())
     .filter((q) => q);
@@ -211,13 +190,55 @@ function filterBookmarks(bookmarks, q) {
         .reduce((a, b) => a - b)
     );
   if (relevantBookmarks.length === 0) {
-    const chars = (q || '').toLowerCase().split('');
+    const chars = qLowerCase.split('');
     relevantBookmarks = bookmarks.filter((p) => {
       const set = new Set((p.path + p.title).toLowerCase().split(''));
       return chars.every((q) => set.has(q));
     });
   }
   return relevantBookmarks;
+}
+
+const cache = new Map();
+/**
+ * @param {string} q 
+ * @param {{
+    faviconUrl: string;
+    url: string;
+    id: string;
+    title: string;
+    path: string;
+}[]} bookmarks
+*/
+function findFirstBookmarkId(bookmarks, q) {
+  const cacheVal = cache.get(q);
+  if (cacheVal) return cacheVal;
+
+  const qLowerCase = (q || '').toLowerCase();
+  const words = qLowerCase
+    .split(' ')
+    .map((q) => q.trim())
+    .filter((q) => q);
+
+  let relevantBookmark = bookmarks
+    .filter((p) =>
+      words.every((q) =>
+        [p.path.toLowerCase(), p.title.toLowerCase()].some((s) => s.includes(q))
+      )
+    )
+    .minBy((p) =>
+      (p.title.toLowerCase() + p.path.toLowerCase()).indexOf(words[0])
+    );
+  if (!relevantBookmark) {
+    const chars = qLowerCase.split('');
+    relevantBookmark = bookmarks.find((p) => {
+      const set = new Set((p.path + p.title).toLowerCase().split(''));
+      return chars.every((q) => set.has(q));
+    });
+  }
+
+  cache.set(q, relevantBookmark.id);
+  return relevantBookmark.id;
 }
 
 /** @param {chrome.bookmarks.BookmarkTreeNode} mainNode */
@@ -239,7 +260,7 @@ let currentNodeOptions;
 let currentNodeOptionsIndex = 0;
 function goto() {
   chrome.tabs.create({
-    url: currentNodeOptions[currentNodeOptionsIndex].url
+    url: currentNodeOptions[currentNodeOptionsIndex].url,
   });
 }
 

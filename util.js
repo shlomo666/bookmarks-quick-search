@@ -23,5 +23,46 @@ const util = (() => {
     return Math.sqrt((y1 - y2) ** 2 + (x1 - x2) ** 2);
   }
 
-  return { distance, keyboardDistance };
+  /**
+   * @param {string[]} chars
+   * @param {number} length
+   */
+  function allCombinations(chars, length) {
+    let ret = [...chars];
+    for (let i = 0; i < length - 1; i++) {
+      ret = [...new Set(ret)]
+        .map((s) => {
+          return [...chars].map((ch) => s + ch);
+        })
+        .flat()
+        .sort(
+          (s1, s2) =>
+            keyboardDistance(...s1.slice(-2)) -
+            keyboardDistance(...s2.slice(-2))
+        );
+    }
+    return ret;
+  }
+
+  let lastTime = performance.now();
+  function timePassed() {
+    const now = performance.now();
+    const diff = lastTime - now;
+    lastTime = now;
+    return Math.abs(diff);
+  }
+
+  return { distance, keyboardDistance, allCombinations, timePassed };
 })();
+
+Array.prototype.minBy = function (fn) {
+  let minVal, minScore;
+  this.forEach((v, i, arr) => {
+    const score = fn(v, i, arr);
+    if (i === 0 || score < minScore) {
+      minScore = score;
+      minVal = v;
+    }
+  });
+  return minVal;
+};
