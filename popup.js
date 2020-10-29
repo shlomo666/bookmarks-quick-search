@@ -1,7 +1,7 @@
 'use strict';
 
 const MAX_BOOKMARKS = 300;
-let search = document.getElementById('search');
+let search = document.querySelector('input');
 const root = document.getElementById('root');
 let finishedHtmlLoad = Promise.resolve();
 
@@ -259,9 +259,13 @@ function getTitlePath(mainNode, allNodes) {
 let currentNodeOptions;
 let currentNodeOptionsIndex = 0;
 function goto() {
-  chrome.tabs.create({
-    url: currentNodeOptions[currentNodeOptionsIndex].url,
-  });
+  const url = currentNodeOptions[currentNodeOptionsIndex].url;
+  if (url.startsWith('javascript:')) {
+    chrome.tabs.executeScript(null, { code: url.slice(11) });
+    window.close();
+  } else {
+    chrome.tabs.create({ url });
+  }
 }
 
 const refreshPopup = (search.oninput = () => {
