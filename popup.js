@@ -29,7 +29,7 @@ async function loadResults(q) {
           `<div>
             <div id="div_${i}">
               <img src="${faviconUrl}" />
-              <span class="bookmarkTitle" title="${title}">${title}</span>
+              <span id="bookmarkTitle_${i}" class="bookmarkTitle" title="${title}">${title}</span>
               ${
                 !shortcut
                   ? `<span id="shortcut_${i}" class="bookmarkShortcut"></span>`
@@ -96,6 +96,7 @@ async function loadResults(q) {
     });
   });
 
+  highlightQueryInsideBookmarks(bookmarks.length, q);
   loadShortcuts(all, bookmarks);
 }
 
@@ -130,13 +131,6 @@ async function loadShortcuts(all, bookmarks) {
       }
     }
   }
-}
-
-function displayShortcut(idx, shortcut) {
-  const span = document.getElementById(`shortcut_${idx}`);
-  if (!span) return;
-  span.innerText = shortcut;
-  span.title = `Search '${shortcut}' to get this bookmark as the first result`;
 }
 
 async function getBookmarks() {
