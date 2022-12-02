@@ -151,12 +151,17 @@ async function getBookmarks() {
     .filter((p) => p.url)
     .map((p) => ({
       ...getTitlePath(p, all),
-      faviconUrl: `chrome://favicon/${p.url.split('?')[0]}`,
+      faviconUrl: getFaviconUrl(p.url),
       url: p.url,
       id: p.id,
     }));
 
   return bookmarks;
+}
+
+/** @param {string} url */
+function getFaviconUrl(url) {
+  return IS_TEST ? '' : `chrome://favicon/${url.split('?')[0]}`;
 }
 
 /**
