@@ -103,7 +103,7 @@ let iteration = 1;
 async function loadShortcuts(all, bookmarks) {
   const currIteration = ++iteration;
   const checkForEvents = async () => {
-    if (util.timePassed() > 0.025) {
+    if (util.timePassed() > 25) {
       await new Promise((r) => requestAnimationFrame(r));
     }
     if (iteration !== currIteration) {
