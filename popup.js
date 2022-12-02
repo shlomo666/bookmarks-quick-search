@@ -111,7 +111,6 @@ async function loadShortcuts(all, bookmarks) {
     }
   };
   for (let idx = 0; idx < bookmarks.length; idx++) {
-    if (await checkForEvents()) return;
     const bookmark = bookmarks[idx];
     const allChars = [
       ...new Set((bookmark.title + bookmark.path).toLowerCase().split('')),
@@ -119,24 +118,25 @@ async function loadShortcuts(all, bookmarks) {
     let shortcutLength = 0;
     let foundShortcut = false;
     while (++shortcutLength <= 3 && !foundShortcut) {
-      if (await checkForEvents()) return;
       const partials = util.allCombinations(allChars, shortcutLength);
       for (let i = 0; i < partials.length && !foundShortcut; i++) {
-        if (i % 100 === 0) {
-          if (await checkForEvents()) return;
-        }
+        if (await checkForEvents()) return;
         const shortcut = partials[i];
         const matched = findFirstBookmarkId(all, shortcut) === bookmark.id;
         if (matched) {
-          const span = document.getElementById(`shortcut_${idx}`);
-          if (!span) return;
-          span.innerText = shortcut;
-          span.title = `Search '${shortcut}' to get this bookmark as the first result`;
+          displayShortcut(idx, shortcut);
           foundShortcut = true;
         }
       }
     }
   }
+}
+
+function displayShortcut(idx, shortcut) {
+  const span = document.getElementById(`shortcut_${idx}`);
+  if (!span) return;
+  span.innerText = shortcut;
+  span.title = `Search '${shortcut}' to get this bookmark as the first result`;
 }
 
 async function getBookmarks() {
@@ -147,10 +147,12 @@ async function getBookmarks() {
   }
   all.splice(0, 3);
 
+  const nodeByIdMap = all.keyBy((p) => p.id);
+
   const bookmarks = all
     .filter((p) => p.url)
     .map((p) => ({
-      ...getTitlePath(p, all),
+      ...getTitlePath(p, nodeByIdMap),
       faviconUrl: getFaviconUrl(p.url),
       url: p.url,
       id: p.id,
@@ -204,7 +206,7 @@ function filterBookmarks(bookmarks, q) {
   return relevantBookmarks;
 }
 
-const cache = new Map();
+const findFirstBookmarkIdResponseCache = new Map();
 /**
  * @param {string} q 
  * @param {{
@@ -216,7 +218,7 @@ const cache = new Map();
 }[]} bookmarks
 */
 function findFirstBookmarkId(bookmarks, q) {
-  const cacheVal = cache.get(q);
+  const cacheVal = findFirstBookmarkIdResponseCache.get(q);
   if (cacheVal) return cacheVal;
 
   const qLowerCase = (q || '').toLowerCase();
@@ -242,20 +244,19 @@ function findFirstBookmarkId(bookmarks, q) {
     });
   }
 
-  cache.set(q, relevantBookmark.id);
+  findFirstBookmarkIdResponseCache.set(q, relevantBookmark.id);
   return relevantBookmark.id;
 }
 
 /** @param {chrome.bookmarks.BookmarkTreeNode} mainNode */
-function getTitlePath(mainNode, allNodes) {
+/** @param {Record<string, chrome.bookmarks.BookmarkTreeNode>} nodeByIdMap */
+function getTitlePath(mainNode, nodeByIdMap) {
   let node = mainNode;
   const title = mainNode.title;
 
   let path = '';
-  node = allNodes.find((p) => p.id === node.parentId);
-  while (node) {
+  while ((node = nodeByIdMap[node.parentId])) {
     path = `${node.title}/${path}`;
-    node = allNodes.find((p) => p.id === node.parentId);
   }
 
   return { title, path };

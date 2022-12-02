@@ -28,12 +28,10 @@ const util = (() => {
    * @param {number} length
    */
   function allCombinations(chars, length) {
-    let ret = [...chars];
+    let combinations = chars;
     for (let i = 0; i < length - 1; i++) {
-      ret = [...new Set(ret)]
-        .map((s) => {
-          return [...chars].map((ch) => s + ch);
-        })
+      combinations = combinations
+        .map((s) => chars.map((ch) => s + ch))
         .flat()
         .sort(
           (s1, s2) =>
@@ -41,18 +39,19 @@ const util = (() => {
             keyboardDistance(...s2.slice(-2))
         );
     }
-    return ret;
+
+    return combinations;
   }
 
   let lastTime = performance.now();
-  function timePassed() {
+  function timePassedMS() {
     const now = performance.now();
     const diff = lastTime - now;
     lastTime = now;
     return Math.abs(diff);
   }
 
-  return { distance, keyboardDistance, allCombinations, timePassed };
+  return { keyboardDistance, allCombinations, timePassed: timePassedMS };
 })();
 
 Array.prototype.minBy = function (fn) {
@@ -65,4 +64,12 @@ Array.prototype.minBy = function (fn) {
     }
   });
   return minVal;
+};
+
+Array.prototype.keyBy = function (fn) {
+  const ret = {};
+  this.forEach((v, i, arr) => {
+    ret[fn(v, i, arr)] = v;
+  });
+  return ret;
 };
