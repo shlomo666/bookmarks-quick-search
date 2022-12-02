@@ -163,7 +163,11 @@ async function getBookmarks() {
 
 /** @param {string} url */
 function getFaviconUrl(url) {
-  return IS_TEST ? '' : `chrome://favicon/${url.split('?')[0]}`;
+  return IS_TEST
+    ? ''
+    : `chrome-extension://${
+        chrome.runtime.id
+      }/_favicon/?pageUrl=${encodeURIComponent(url)}&size=16`;
 }
 
 /**
