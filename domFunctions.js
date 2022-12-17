@@ -13,9 +13,13 @@ function displayShortcut(idx, shortcut) {
  * @param {number} bookmarksNumber
  * @param {string} query
  */
-function highlightQueryInsideBookmarks(bookmarksNumber, query) {
+async function highlightQueryInsideBookmarks(bookmarksNumber, query) {
   if (!query) return;
   for (let i = 0; i < bookmarksNumber; i++) {
+    if (util.timePassed() > 5) {
+      await new Promise((r) => requestAnimationFrame(r));
+    }
+
     const titleSpan = document.getElementById(`bookmarkTitle_${i}`);
     if (!titleSpan) continue;
     if (highlightSubStringInsideSpan(titleSpan, query)) continue;
