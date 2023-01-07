@@ -1,6 +1,6 @@
 {
   "name": "Bookmarks Quick Search",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Search bookmarks quickly and easily, with a search popup, which can be opened by a click on the extension logo (or by cmd+E/ctrl+W).",
   "permissions": ["bookmarks", "declarativeContent", "favicon", "activeTab"],
   "background": {
@@ -22,7 +22,7 @@
     "128": "images/bookmarks-searcher128.png"
   },
   "commands": {
-    "_execute_page_action": {
+    "_execute_action": {
       "suggested_key": {
         "default": "Ctrl+W",
         "mac": "Command+E"
