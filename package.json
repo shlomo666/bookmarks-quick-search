@@ -1,15 +1,79 @@
 {
   "name": "bookmarks-quick-search",
-  "version": "1.0.0",
-  "description": "",
-  "main": "background.js",
-  "scripts": {
-    "build": "rm -rf bookmarks-quick-search build.zip && mkdir bookmarks-quick-search && cp -r `ls -A | grep -v .vscode | grep -v bookmarks-quick-search | grep -v node_modules | grep -v .git | grep -v .gitignore` bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rm -rf bookmarks-quick-search"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "version": "0.1.0",
   "dependencies": {
-    "@types/chrome": "0.0.112"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/chrome": "0.0.209",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.11",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "lodash": "^4.17.21",
+    "mobx": "^6.7.0",
+    "mobx-react": "^7.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && npm run buildExtension",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "buildExtension": "rimraf build.zip && mv build bookmarks-quick-search && cp {manifest.json,background.js} bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rimraf bookmarks-quick-search"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/order": [
+        "error",
+        {
+          "alphabetize": {
+            "order": "asc",
+            "caseInsensitive": true
+          },
+          "pathGroups": [
+            {
+              "pattern": "src/**",
+              "group": "parent"
+            }
+          ],
+          "groups": [
+            [
+              "builtin",
+              "external"
+            ],
+            "parent",
+            "sibling"
+          ],
+          "newlines-between": "always"
+        }
+      ]
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.191",
+    "rimraf": "^4.1.1"
   }
 }
