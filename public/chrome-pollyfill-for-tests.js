@@ -8,7 +8,6 @@ if (!chrome.bookmarks) {
   var chrome = {
     bookmarks: {
       getTree: async function () {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         return getBookmarks();
       },
     },
