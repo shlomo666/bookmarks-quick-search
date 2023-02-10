@@ -3,13 +3,13 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { bookmarksBuilder } from './bookmarksBuilder';
 import { BookmarksFilterer } from './BookmarksFilterer';
 import { MAX_BOOKMARKS } from './common/consts';
-import { BookmarkDetails, BookmarkTreeNode } from './common/types';
+import { BookmarkDetails } from './common/types';
 
 class Store {
   query = '';
   private highlightedBookmarkIdx = 0;
   initialized = false;
-  allBookmarks: BookmarkDetails[] | undefined;
+  allBookmarks: BookmarkDetails[] = [];
   shortcuts: { [bookmarkIdx: number]: string } = {};
 
   constructor() {
@@ -24,17 +24,12 @@ class Store {
     Store.getTree().then((allBookmarks) => {
       runInAction(() => {
         this.allBookmarks = allBookmarks;
-        this.initialized = true;
       });
     });
   }
 
   private static async getTree() {
-    const tree = await new Promise<BookmarkTreeNode[]>((resolve) =>
-      chrome.bookmarks.getTree((bookmarks) => {
-        resolve(bookmarks);
-      })
-    );
+    const tree = await chrome.bookmarks.getTree();
 
     const allBookmarks = bookmarksBuilder.build(tree);
     return allBookmarks;
@@ -42,10 +37,6 @@ class Store {
 
   private getFilteredBookmarks() {
     const { query, allBookmarks } = this;
-
-    if (!allBookmarks) {
-      throw new Error('store was not initialized');
-    }
 
     const filteredBookmarks = new BookmarksFilterer(allBookmarks).filter(query);
     return filteredBookmarks;
@@ -98,3 +89,5 @@ class Store {
 }
 
 export const store = new Store();
+
+store.init();

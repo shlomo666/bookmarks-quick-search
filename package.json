@@ -24,7 +24,7 @@
     "build": "react-scripts build && npm run buildExtension",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "buildExtension": "rimraf build.zip && mv build bookmarks-quick-search && cp {manifest.json,background.js} bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rimraf bookmarks-quick-search"
+    "buildExtension": "rimraf bookmarks-quick-search build.zip && mv build bookmarks-quick-search && cp {manifest.json,background.js} bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rimraf bookmarks-quick-search"
   },
   "eslintConfig": {
     "extends": [

@@ -4,7 +4,7 @@ import { store } from 'src/store';
 import { calculateShortcuts } from './calculateShortcuts';
 
 reaction(
-  () => store.initialized && store.bookmarks,
+  () => store.bookmarks,
   (bookmarks) => {
     if (bookmarks) {
       calculateShortcuts(store.allBookmarks!, bookmarks);

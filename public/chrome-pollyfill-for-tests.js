@@ -7,8 +7,9 @@ if (!chrome.bookmarks) {
 
   var chrome = {
     bookmarks: {
-      getTree: function (callback) {
-        return callback(getBookmarks());
+      getTree: async function () {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return getBookmarks();
       },
     },
   };
