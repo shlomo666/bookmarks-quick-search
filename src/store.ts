@@ -1,8 +1,12 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 
 import { bookmarksBuilder } from './bookmarksBuilder';
 import { BookmarksFilterer } from './BookmarksFilterer';
-import { MAX_BOOKMARKS } from './common/consts';
+import {
+  BOOKMARKS_SAMPLE_SIZE,
+  DELAY_BETWEEN_LOAD_SAMPLE_TO_LOAD_ALL_MS,
+  MAX_BOOKMARKS,
+} from './common/consts';
 import { BookmarkDetails } from './common/types';
 
 class Store {
@@ -11,6 +15,8 @@ class Store {
   initialized = false;
   allBookmarks: BookmarkDetails[] = [];
   shortcuts: { [bookmarkIdx: number]: string } = {};
+
+  private maxBookmarks: number = BOOKMARKS_SAMPLE_SIZE;
 
   constructor() {
     makeAutoObservable(this);
@@ -25,6 +31,23 @@ class Store {
       runInAction(() => {
         this.allBookmarks = allBookmarks;
       });
+
+      const setMaxBookmarks = () => {
+        this.maxBookmarks = MAX_BOOKMARKS;
+      };
+
+      const clear = setTimeout(() => {
+        runInAction(setMaxBookmarks);
+      }, DELAY_BETWEEN_LOAD_SAMPLE_TO_LOAD_ALL_MS);
+
+      const reactionUnsubscribe = reaction(
+        () => this.query,
+        () => {
+          clearTimeout(clear);
+          reactionUnsubscribe();
+          setMaxBookmarks();
+        }
+      );
     });
   }
 
@@ -43,7 +66,7 @@ class Store {
   }
 
   get bookmarks() {
-    return this.getFilteredBookmarks().slice(0, MAX_BOOKMARKS);
+    return this.getFilteredBookmarks().slice(0, this.maxBookmarks);
   }
 
   get hasMore() {
