@@ -7,8 +7,13 @@ if (!chrome.bookmarks) {
 
   var chrome = {
     bookmarks: {
-      getTree: async function () {
+      getTree: async () => {
         return getBookmarks();
+      },
+    },
+    tabs: {
+      create: (options) => {
+        console.log('create tab', options);
       },
     },
   };
