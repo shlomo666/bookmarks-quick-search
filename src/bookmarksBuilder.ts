@@ -40,8 +40,10 @@ class BookmarksBuilder {
   }
 
   private getFaviconUrl(url: string) {
+    const randomImageUrlWith32Pix = `https://picsum.photos/16`;
+
     return (global as any).IS_TEST
-      ? ''
+      ? randomImageUrlWith32Pix
       : `chrome-extension://${
           chrome.runtime.id
         }/_favicon/?pageUrl=${encodeURIComponent(url)}&size=16`;

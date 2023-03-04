@@ -11,8 +11,8 @@ export const BookmarksList = observer(() => {
     <div className="bookmarks-list">
       {store.bookmarks.map((bookmark, i) => (
         <Fragment key={`bookmark-${bookmark.id}`}>
+          {i > 0 ? <hr /> : null}
           <Bookmark {...bookmark} idx={i} />
-          <hr />
         </Fragment>
       ))}
       {store.hasMore ? <AndMore /> : null}

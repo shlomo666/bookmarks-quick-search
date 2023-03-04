@@ -1,3 +1,3 @@
 export function BookmarkFaviconUrl({ faviconUrl }: { faviconUrl: string }) {
-  return <img src={faviconUrl} alt="" />;
+  return <img className="bookmark-fav" src={faviconUrl} alt="" />;
 }

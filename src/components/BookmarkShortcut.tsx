@@ -6,7 +6,7 @@ export const BookmarkShortcut = observer(
     const shortcut = store.shortcuts[bookmarkIdx];
     return (
       <span
-        className="bookmark-shortcut"
+        className="bookmark-shortcut stick-to-right"
         title={
           shortcut &&
           `Search '${shortcut}' to get this bookmark as the first result`

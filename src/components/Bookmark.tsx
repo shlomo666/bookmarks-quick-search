@@ -12,12 +12,12 @@ export const Bookmark = observer(
   (bookmarkDetails: BookmarkDetails & { idx: number }) => {
     const { idx, faviconUrl, title, path, url } = bookmarkDetails;
 
-    const isHighlighted = store.isHighlightedBookmark(idx);
+    const extraBookmarkContentClasses = getExtraBookmarkContentClasses(idx);
 
     return (
-      <div>
+      <div className="content-row">
         <div
-          className={`bookmark ${isHighlighted ? 'highlighted' : ''}`}
+          className={`bookmark-main-content ${extraBookmarkContentClasses}`}
           onMouseEnter={() => store.setHighlightedBookmarkIdx(idx)}
           onClick={() => invokeBookmark(url)}
         >
@@ -30,3 +30,9 @@ export const Bookmark = observer(
     );
   }
 );
+
+function getExtraBookmarkContentClasses(idx: number) {
+  const isHighlighted = store.isHighlightedBookmark(idx);
+  const specificBookmarkContentStyle = isHighlighted ? 'highlighted' : '';
+  return specificBookmarkContentStyle;
+}

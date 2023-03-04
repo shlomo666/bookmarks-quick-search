@@ -19,6 +19,7 @@ hr {
   border: none;
   height: 1px;
   background-color: rgba(172, 172, 172, 0.2);
+  margin: 0;
 }
 img {
   height: 100%;
@@ -28,7 +29,7 @@ img {
   cursor: pointer;
   max-height: 405px;
   height: fit-content;
-  overflow: scroll;
+  overflow: auto;
 }
 .bookmarks-list > div {
   padding: 0 8px 0 8px;
@@ -66,11 +67,19 @@ span {
 }
 
 .bookmark-title {
-  width: 200px;
+}
+
+.stick-to-right {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .bookmark-shortcut {
   color: gray;
+}
+
+.bookmark-fav {
 }
 
 .bookmark-path {
@@ -83,9 +92,15 @@ span {
   font-size: large;
 }
 
-.bookmark {
+.bookmark-main-content {
+  display: flex;
   font-weight: normal;
   font-size: normal;
+  width: auto;
+}
+
+.content-row {
+  margin: 8px;
 }
 
 .highlighted {

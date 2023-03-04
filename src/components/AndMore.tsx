@@ -2,7 +2,7 @@ export function AndMore() {
   return (
     <>
       <hr />
-      <div className="and-more">And more...</div>
+      <div className="content-row and-more">And more...</div>
     </>
   );
 }
