@@ -1,4 +1,4 @@
-import { BookmarkDetails } from './common/types';
+import { BookmarkDetails } from 'src/common/types';
 
 export class BookmarksFilterer {
   constructor(private readonly bookmarks: BookmarkDetails[]) {}

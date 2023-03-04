@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
 import { Fragment } from 'react';
-
-import { store } from '../store';
+import { store } from 'src/store';
 
 import { AndMore } from './AndMore';
 import { Bookmark } from './Bookmark';

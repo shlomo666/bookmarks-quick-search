@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react';
-
-import { BookmarksList } from './BookmarksList';
-import { Header } from './Header';
+import { BookmarksList } from 'src/features/bookmarks';
+import { Header } from 'src/features/header';
 import 'src/shortcuts/loadShortcutsInBackground';
 
 function App() {

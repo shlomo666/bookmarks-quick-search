@@ -1,13 +1,13 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-
-import { bookmarksBuilder } from './bookmarksBuilder';
-import { BookmarksFilterer } from './BookmarksFilterer';
 import {
   BOOKMARKS_SAMPLE_SIZE,
   DELAY_BETWEEN_LOAD_SAMPLE_TO_LOAD_ALL_MS,
   MAX_BOOKMARKS,
-} from './common/consts';
-import { BookmarkDetails } from './common/types';
+} from 'src/common/consts';
+import { BookmarkDetails } from 'src/common/types';
+
+import { bookmarksBuilder } from './bookmarksBuilder';
+import { BookmarksFilterer } from './BookmarksFilterer';
 
 class Store {
   query = '';
