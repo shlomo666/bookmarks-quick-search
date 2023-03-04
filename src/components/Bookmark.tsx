@@ -5,7 +5,7 @@ import { store } from 'src/store';
 
 import { BookmarkFaviconUrl } from './BookmarkFaviconUrl';
 import { BookmarkPath } from './BookmarkPath';
-import { BookmarkShortcut } from './BookmarkShortcut';
+import { BookmarkShortcut } from './BookmarkShortcut/BookmarkShortcut';
 import { BookmarkTitle } from './BookmarkTitle';
 
 export const Bookmark = observer(

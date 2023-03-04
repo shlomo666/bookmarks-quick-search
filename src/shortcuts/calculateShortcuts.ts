@@ -1,11 +1,10 @@
+import { MAX_SHORTCUT_LENGTH } from 'src/common/consts';
 import { BookmarkDetails } from 'src/common/types';
 import { store } from 'src/store';
 
 import { findFirstBookmarkId } from './findFirstBookmarkId';
 import { getAllCharCombinations } from './getAllCharCombinations';
 import { timePassedMS } from './timePassedMS';
-
-const MAX_SHORTCUT_LENGTH = 3;
 
 let iteration = 1;
 export async function calculateShortcuts(
