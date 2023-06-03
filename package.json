@@ -24,7 +24,7 @@
     "build": "react-scripts build && npm run buildExtension",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "buildExtension": "rimraf bookmarks-quick-search build.zip && mv build bookmarks-quick-search && cp {manifest.json,background.js} bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && rimraf bookmarks-quick-search"
+    "buildExtension": "shx rm -rf bookmarks-quick-search build.zip && shx mv build bookmarks-quick-search && shx cp {manifest.json,background.js} bookmarks-quick-search && zip -r build.zip bookmarks-quick-search && shx rm -rf bookmarks-quick-search"
   },
   "eslintConfig": {
     "extends": [
@@ -74,6 +74,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.191",
-    "rimraf": "^4.1.1"
+    "shx": "^0.3.4"
   }
 }
