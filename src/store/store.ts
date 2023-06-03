@@ -1,6 +1,7 @@
+import clamp from 'lodash/clamp';
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import {
-  BOOKMARKS_SAMPLE_SIZE,
+  BOOKMARKS_FIRST_LOAD_SAMPLE_SIZE,
   DELAY_BETWEEN_LOAD_SAMPLE_TO_LOAD_ALL_MS,
   MAX_BOOKMARKS,
 } from 'src/common/consts';
@@ -16,7 +17,7 @@ class Store {
   allBookmarks: BookmarkDetails[] = [];
   shortcuts: { [bookmarkIdx: number]: string } = {};
 
-  private maxBookmarks: number = BOOKMARKS_SAMPLE_SIZE;
+  private maxBookmarks: number = BOOKMARKS_FIRST_LOAD_SAMPLE_SIZE;
 
   constructor() {
     makeAutoObservable(this);
@@ -66,11 +67,26 @@ class Store {
   }
 
   get bookmarks() {
-    return this.getFilteredBookmarks().slice(0, this.maxBookmarks);
+    const filteredBookmarks = this.getFilteredBookmarks().slice(
+      0,
+      this.maxBookmarks
+    );
+    this.clampHighlightedBookmarkIdx(filteredBookmarks.length);
+    return filteredBookmarks;
+  }
+
+  private clampHighlightedBookmarkIdx(filteredBookmarksSize: number) {
+    runInAction(() => {
+      this.highlightedBookmarkIdx = clamp(
+        this.highlightedBookmarkIdx,
+        0,
+        filteredBookmarksSize - 1
+      );
+    });
   }
 
   get hasMore() {
-    return this.getFilteredBookmarks().length > MAX_BOOKMARKS;
+    return this.getFilteredBookmarks().length > this.maxBookmarks;
   }
 
   get highlightedBookmark() {
