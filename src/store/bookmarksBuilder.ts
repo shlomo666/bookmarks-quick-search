@@ -1,4 +1,4 @@
-import { keyBy } from 'lodash';
+import keyBy from 'lodash/keyBy';
 import { BookmarkDetails, BookmarkTreeNode } from 'src/common/types';
 
 class BookmarksBuilder {

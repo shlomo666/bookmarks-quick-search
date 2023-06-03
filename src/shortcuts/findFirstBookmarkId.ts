@@ -1,4 +1,4 @@
-import { minBy } from 'lodash';
+import minBy from 'lodash/minBy';
 import { BookmarkDetails } from 'src/common/types';
 
 const findFirstBookmarkIdResponseCache = new Map();
